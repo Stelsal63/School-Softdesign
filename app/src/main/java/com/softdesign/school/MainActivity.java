@@ -1,4 +1,4 @@
-package com.example.school_softdesign.school_softdesign;
+package com.softdesign.school;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
