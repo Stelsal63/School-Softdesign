@@ -1,8 +1,21 @@
 package com.softdesign.school;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Build;
 import android.os.PersistableBundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,31 +24,32 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import com.softdesign.school.ui.fragments.ContactsFragment;
+import com.softdesign.school.ui.fragments.ProfileFragment;
+import com.softdesign.school.ui.fragments.SettingFragment;
+import com.softdesign.school.ui.fragments.TasksFragment;
+import com.softdesign.school.ui.fragments.TeamFragment;
 import com.softdesign.school.utils.Lg;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity {
 
-    public static  final String VISIBLE_KEY = "visible";
-    public static  final String STATUS_BAR_KEY = "sbColor";
-    public static  final String TOOLBAR_KEY = "tbColor";
+    public static final String CHECKED_KEY = "checked";
+    private static final String FRAGMENT_TAG = "fragment";
 
-    private int mColor;
+    private NavigationView mNavigationView;
+    private DrawerLayout mNavigationDrawer;
+    private Fragment mFragment;
+    private FrameLayout mFrameContainer;
+    private MenuItem mItem;
+    private ImageView mImageView;
+    private View mHeaderView;
 
-    CheckBox mCheckBox;
-
-    EditText mEditText;
-    EditText mEditText2;
-
-    Toolbar mToolbar;
-
-    private Button mButtonRed;
-    private Button mButtonBlue;
-    private Button mButtonGreen;
-
-
+    private Toolbar mToolbar;
 
 
     @Override
@@ -44,26 +58,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setTitle("School Lesson 1");
+        setTitle("School Lesson 3");
+
+        mNavigationDrawer = (DrawerLayout) findViewById(R.id.navigation_drawer);
+        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        mHeaderView = mNavigationView.inflateHeaderView(R.layout.navigation_header);
+        mImageView = (ImageView) mHeaderView.findViewById(R.id.drawerAvatar);
+
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.profile_icon);
+        mImageView.setImageBitmap(getCircleBitmap(bm));
 
         Lg.e(this.getLocalClassName(), "on create");
-        mCheckBox = (CheckBox) findViewById(R.id.checkBox);
-        mCheckBox.setOnClickListener(this);
-        mEditText = (EditText) findViewById(R.id.editText);
-        mEditText2 = (EditText) findViewById(R.id.editText2);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mButtonBlue = (Button) findViewById(R.id.button_blue);
-        mButtonBlue.setOnClickListener(this);
-        mButtonGreen = (Button) findViewById(R.id.button_green);
-        mButtonGreen.setOnClickListener(this);
-        mButtonRed = (Button) findViewById(R.id.button_red);
-        mButtonRed.setOnClickListener(this);
 
+
+        setupDrawer();
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setupToolbar();
 
+        if (savedInstanceState == null) {
+            mItem = mNavigationView.getMenu().findItem(R.id.drawer_profile);
+            mItem.setChecked(true);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_container, new ProfileFragment(), FRAGMENT_TAG).commit();
+        }
     }
 
-    private void setupToolbar(){
+    private void setupToolbar() {
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -74,44 +95,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            Toast.makeText(this, "Menu click", Toast.LENGTH_SHORT).show();
+        if (item.getItemId() == android.R.id.home) {
+            mNavigationDrawer.openDrawer(GravityCompat.START);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        switch (id) {
-            case R.id.checkBox:
-                Toast.makeText(this, "Click!", Toast.LENGTH_SHORT).show();
-                if (mCheckBox.isChecked()){
-                    mEditText2.setVisibility(View.INVISIBLE);
-                } else {
-                    mEditText2.setVisibility(View.VISIBLE);
-                }
-                break;
-            case R.id.button_blue:
-                setBackgroundAndStatusBarColor(R.color.blue,R.color.darkblue);
-                break;
-            case R.id.button_green:
-                setBackgroundAndStatusBarColor(R.color.green, R.color.darkgreen);
-                break;
-            case R.id.button_red:
-                setBackgroundAndStatusBarColor(R.color.red,R.color.darkred);
-                break;
-
-        }
-    }
-
-    private void setBackgroundAndStatusBarColor(int tbColor, int sbColor) {
-        mToolbar.setBackgroundResource(tbColor);
-        mColor = tbColor;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(getResources().getColor(sbColor));
-        }
-    }
 
     @Override
     protected void onStart() {
@@ -143,6 +132,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Lg.e(this.getLocalClassName(), "on restart");
     }
 
+    private void setupDrawer() {
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.drawer_profile:
+                        mFragment = new ProfileFragment();
+                        break;
+                    case R.id.drawer_contacts:
+                        mFragment = new ContactsFragment();
+                        break;
+                    case R.id.drawer_setting:
+                        mFragment = new SettingFragment();
+                        break;
+                    case R.id.drawer_tasks:
+                        mFragment = new TasksFragment();
+                        break;
+                    case R.id.drawer_team:
+                        mFragment = new TeamFragment();
+                        break;
+                }
+
+                itemChecked(item);
+
+                if (mFragment != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_container, mFragment, FRAGMENT_TAG).addToBackStack(null).commit();
+                }
+
+                mNavigationDrawer.closeDrawers();
+                return false;
+            }
+
+        });
+    }
+
+    private void itemChecked(MenuItem item) {
+        mItem.setChecked(false);
+        item.setChecked(true);
+        mItem = item;
+    }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -152,27 +183,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Lg.e(this.getLocalClassName(), "on save instance state");
-        outState.putBoolean(VISIBLE_KEY, mEditText2.getVisibility() == View.VISIBLE);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            outState.putInt(STATUS_BAR_KEY, getWindow().getStatusBarColor());
-        outState.putInt(TOOLBAR_KEY, mColor);
+        outState.putInt(CHECKED_KEY, mItem.getItemId());
+
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        Lg.e(this.getLocalClassName(), "on restore instance state");
-        int visibleState = savedInstanceState.getBoolean(VISIBLE_KEY) ? View.VISIBLE : View.INVISIBLE;
+        mItem = mNavigationView.getMenu().findItem(savedInstanceState.getInt(CHECKED_KEY));
+        mItem.setChecked(true);
 
-        int tbColor =savedInstanceState.getInt(TOOLBAR_KEY);
-        mColor = tbColor;
-        mToolbar.setBackgroundResource(tbColor);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int sbColor = savedInstanceState.getInt(STATUS_BAR_KEY);
-            getWindow().setStatusBarColor(sbColor);
-        }
-        mEditText2.setVisibility(visibleState);
     }
+
+    @Override
+    public void onBackPressed() {
+
+
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            finish();
+            System.exit(0);
+        }
+
+        super.onBackPressed();
+        Fragment backFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+
+
+        if (backFragment instanceof ProfileFragment) {
+            itemChecked(mNavigationView.getMenu().findItem(R.id.drawer_profile));
+        }
+
+        if (backFragment instanceof ContactsFragment) {
+            itemChecked(mNavigationView.getMenu().findItem(R.id.drawer_contacts));
+        }
+
+        if (backFragment instanceof TeamFragment) {
+            itemChecked(mNavigationView.getMenu().findItem(R.id.drawer_team));
+        }
+
+        if (backFragment instanceof TasksFragment) {
+            itemChecked(mNavigationView.getMenu().findItem(R.id.drawer_tasks));
+        }
+
+        if (backFragment instanceof SettingFragment) {
+            itemChecked(mNavigationView.getMenu().findItem(R.id.drawer_setting));
+        }
+    }
+
+    private Bitmap getCircleBitmap(Bitmap bitmap) {
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        paint.setAntiAlias(true);
+        paint.setShadowLayer(5.5f, 6.0f, 6.0f, Color.BLACK);
+        canvas.drawOval(rectF, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        bitmap.recycle();
+
+        return output;
+    }
+
 }
