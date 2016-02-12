@@ -5,8 +5,8 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.example.school_softdesign.school_softdesign"
-        minSdkVersion 14
+        applicationId "com.softdesign.school"
+        minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"

@@ -1,4 +1,26 @@
 <resources>
-    <string name="app_name">School-Softdesign</string>
+    <string name="app_name">My Application</string>
     <string name="action_settings">Settings</string>
+
+    <string name="drawer.profile">Профиль</string>
+    <string name="drawer.contacts">Контакты</string>
+    <string name="drawer.tasks">Задачи</string>
+    <string name="drawer.team">Команда</string>
+    <string name="drawer.setting">Настройки</string>
+    <string name="fragment.contacts.description">Здесь будут контакты</string>
+    <string name="fragment.profile.description">Здесь будет профиль</string>
+    <string name="fragment.setting.description">Здесь будут настройки</string>
+    <string name="fragment.tasks.description">Здесь будут задачи</string>
+    <string name="fragment.team.description">здесь будет команда</string>
+
+    <string name="student.fio">Имангулов Альберт</string>
+    <string name="student.email">Stelsal63@mail.ru</string>
+    <string name="student.rating">0</string>
+
+    <string name="roboto.regular">sans-serif</string>
+    <string name="roboto.light">sans-serif-light</string>
+    <string name="roboto.condensed">sans-serif-condensed</string>
+    <string name="roboto.thin">sans-serif-thin</string>
+    <string name="roboto.medium">sans-serif-medium</string>
+
 </resources>

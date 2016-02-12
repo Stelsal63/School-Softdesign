@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    android:background="@drawable/drawer_background">
+
+
+    <LinearLayout
+        android:id="@+id/subTitle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/drawer_sub_title"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/drawer_sub_left"
+        android:layout_marginRight="@dimen/drawer_sub_right"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="@string/roboto.medium"
+            android:text="@string/student.fio"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/drawer_fio_textsize" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="@string/roboto.regular"
+            android:text="@string/student.email"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/drawer_email_textsize" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/drawerImages"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/subTitle"
+        android:layout_marginLeft="@dimen/drawer_sub_left"
+        android:layout_marginRight="@dimen/drawer_sub_right"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="@dimen/drawer_rating_size"
+            android:layout_height="@dimen/drawer_rating_size"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/drawerAvatar"
+            android:background="@drawable/drawer_rating">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@string/roboto.medium"
+                android:text="@string/student.rating"
+                android:textColor="@color/white"
+                android:textSize="@dimen/drawer_rating_textsize" />
+        </RelativeLayout>
+
+
+        <ImageView
+            android:id="@+id/drawerAvatar"
+            android:layout_width="@dimen/avatar_parametr"
+            android:layout_height="@dimen/avatar_parametr"
+            android:layout_alignParentBottom="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="@dimen/drawer_avatar_marginbottom" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
